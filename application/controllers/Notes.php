@@ -46,9 +46,26 @@ class Notes extends CI_Controller {
         return;
       }
 
+      $image_name = null;
+      if (!empty($_FILES['image']['name'])) {
+        $config['upload_path'] = './uploads/';
+        $config['allowed_types'] = 'jpg|jpeg|png|gif';
+        $config['max_size'] = 2048;
+        $config['encrypt_name'] = TRUE;
+      
+        $this->load->library('upload', $config);
+      
+        if ($this->upload->do_upload('image')) {
+          $image_name = $this->upload->data('file_name');
+        } else {
+          $this->session->set_flashdata('error_message', $this->upload->display_errors());
+        }
+      }
+      
       $this->notes->insert([
         'title' => $title,
-        'content' => $content
+        'content' => $content,
+        'image' => $image_name
       ]);
 
       redirect('notes');
@@ -69,10 +86,32 @@ class Notes extends CI_Controller {
       return;
     }
 
-    $this->notes->update($id, [
+    $image_name = null;
+    if (!empty($_FILES['image']['name'])) {
+      $config['upload_path'] = './uploads/';
+      $config['allowed_types'] = 'jpg|jpeg|png|gif';
+      $config['max_size'] = 2048;
+      $config['encrypt_name'] = TRUE;
+    
+      $this->load->library('upload', $config);
+    
+      if ($this->upload->do_upload('image')) {
+        $image_name = $this->upload->data('file_name');
+      } else {
+        $this->session->set_flashdata('error_message', $this->upload->display_errors());
+      }
+    }
+    
+    $data = [
       'title' => $title,
       'content' => $content
-    ]);
+    ];
+    
+    if ($image_name !== null) {
+      $data['image'] = $image_name;
+    }
+    
+    $this->notes->update($id, $data);
 
     $this->session->set_flashdata('success_message', 'Catatan berhasil disimpan.');
     redirect('notes');

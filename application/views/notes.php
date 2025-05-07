@@ -30,6 +30,9 @@
               <h3 class='note-item__title'><?= $note->title ?? "-" ?></h3>
               <p class='note-item__date'><?= $note->updated_at ?? "-" ?></p>
               <p class='note-item__body'><?= $note->content ?? "-" ?></p>
+              <?php if (!empty($note->image)): ?>
+                <img src="<?= base_url('uploads/' . $note->image) ?>" alt="Note Image" style="max-width: 100px; display: block;" />
+              <?php endif; ?>
             </div>
             <div class='note-item__action'>
               <a href="<?= site_url('notes/' . $note->id) ?>" class="note-item__edit-button">Edit</a>
